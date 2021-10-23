@@ -1,9 +1,9 @@
-{-# LANGUAGE GADTs,LambdaCase,RankNTypes,TypeOperators,PolyKinds,DataKinds #-}
+{-# LANGUAGE GADTs,LambdaCase,RankNTypes,TypeOperators#-}
 module Lib where
 import Prelude (Num(..)) 
 import Prelude hiding (succ, fromIntegral)
 import qualified Prelude
-type Digit n = (Eq n, Show n) => n
+type Digit n = (Eq n, Show n, Num n) => n
 
 data Nat where
   S     :: (Eq n, Eq z, Show n, Show z, Num n, Num z, n ~ z) => Digit z -> Digit n -> Nat
@@ -78,15 +78,24 @@ data VDiv where
                    _     -> False
     balanced = False
 
-newtype Mod       = Mod { runMod :: Nat -> Nat -> Equation }
-newtype Equals    = Equals { runEquals :: Nat -> Nat -> Mod ->  (Nat `Mod` Nat) `Equals` (Nat,Nat) }
-data PSST where
- Run :: forall f . (Functor ~ f) => Nat -> Nat -> f ((VDivp Nat) `VApp` (VDivq Nat) `VApp` (VDivm Nat) `VApp` (VDiv Nat)) -> PSST
+data Mod = RunMod Nat Nat (Nat -> Nat -> (Nat,Nat))
+(//) = RunMod
+infixl `RunMod` 
 
-{-
-  PSST :: (r `Mod` q) `Equals` (q,r) :: (VDivp r) `VApp` (VDivq q) `VApp` (VDivm Nat) `VApp` (VDiv q)
-  Equation :: forall p q m d. (Digit p, Digit q, Nat ~ p, q ~ Nat) => 
--}
+instance Semigroup Mod  where 
+  (<>) (RunMod p' q' _) (RunMod d' b' _) = RunMod p b solver
+    where
+      p = (p' <> d')
+      b = (q' <> b')
 
+instance Monoid Mod where mempty = RunMod mempty mempty solver
 
+solver :: Nat -> Nat -> (Nat, Nat)
+solver p' q' =  (modulo, mempty)
+  where
+   p =  (VDivp p')
+   q =  (VDivq q')
+   (VDivm modulo) = p `VApp` q `VApp` (VDivm mempty) `VApp` q
+
+someFunc :: IO ()
 someFunc = return ()
