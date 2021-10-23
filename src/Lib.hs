@@ -1,47 +1,78 @@
-{-# LANGUAGE GADTs,RankNTypes #-}
+{-# LANGUAGE GADTs,LambdaCase,RankNTypes #-}
 module Lib where
-import Prelude hiding (succ)
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
-
-type Digit n = (Num n, Eq n, Show n) => n
+import Prelude (Num(..)) 
+import Prelude hiding (succ, fromIntegral)
+import qualified Prelude
+type Digit n = (Eq n, Show n) => n
 
 data Nat where
-  S     :: (Eq n, Eq z, Show n, Show z, Num n, Num z) => Digit z -> Digit n -> Nat
+  S     :: (Eq n, Eq z, Show n, Show z, Num n, Num z, n ~ z) => Digit z -> Digit n -> Nat
   Z     :: () -> Nat
   NZ    :: Nat -> Nat
   NS    :: (Digit n -> Digit n -> Nat) -> Nat -> Nat
   DIVzZ :: () ->  Nat
 
 instance Num Nat where
+
+instance Enum Nat where
+  toEnum 0 = NZ   zero
+  toEnum 1 = NS S one
+  toEnum k = NS S (succ (toEnum (k + negate 1) :: Nat))
+
 instance Eq Nat where
-
--- showsPrec d x r ++ s  ==  showsPrec d x (r ++ s)
-instance Show Nat where 
-  showsPrec d (S z n)  = showsPrec d z . showsPrec d " + " . showsPrec (d+1) n
-  showsPrec d (Z _)    = showsPrec d "0)"
-  showsPrec d (NZ _)   = showsPrec d "("
-  showsPrec d (NS _ m) = showsPrec d "(" . showsPrec (d `seq` d+1) m . showsPrec d ")"
-  showsPrec d (DIVzZ _)= showsPrec d "<<divding by zero already, son?>>"
-
+  (Z _   ) == (Z _)    = True
+  (NZ z  ) == (NZ n)   = z == n 
+  (NS _ z) == (NS _ n) = z == n
+  n == z               = False
 
 (>>>) :: Nat -> Nat -> Nat
 (>>>) z n = S z n
 
-succ :: Nat -> Nat
-succ btm@(DIVzZ _) = btm
-succ f@(NZ _)      = NS (S) f
-succ (NS _ o)      = NS (>>>) (succ o)
-succ n             = n `seq` (succ (shrink n))
+instance Semigroup Nat where (<>) = (>>>)
+instance Monoid Nat    where mempty = NS (>>>) zero
 
+-- showsPrec d x r ++ s  ==  showsPrec d x (r ++ s)
+instance Show Nat where 
+  showsPrec d (S z n)  = showsPrec d z . showsPrec d  '+' . showsPrec d n
+  showsPrec d (Z _)    = showsPrec d (mempty :: String)
+  showsPrec d (NZ z)   = showsPrec d '(' . showsPrec d z . showsPrec d ')'
+  showsPrec d (NS _ m) = showsPrec d '(' . showsPrec (d-1) m . showsPrec d ')'
+  showsPrec d (DIVzZ _)= showsPrec d "<<divding by zero already, son?>>"
+
+zero, one :: Nat
+one  = S 0 1
+zero = Z ()
+negate_one  = S 0 (negate 1)
+
+succ :: Nat -> Nat
+succ btm@(DIVzZ _)   = btm
+succ z@(NZ _)        = NS (S) z
+succ i@(NS _ o)      = NS (S) (one `S` o)
 
 shrink :: Nat -> Nat
-shrink (Z _) = DIVzZ ()
+shrink (Z ()  )         = Z ()
+shrink z@(NZ _)         = z
+shrink (NS _ car)       = NS (S) (negate_one `S` car)
 
-fromIntegralHelper :: forall n. (Show n, Num n, Eq n) => Digit n -> (Nat, n)
-fromIntegralHelper = \n -> foldl (\(b,a) _ -> if a == 0 then (b,0) else (succ b, a `seq` a-1)) (NZ(Z ()),n) (repeat ())
-fromIntegral :: forall n. (Show n, Num n, Eq n) =>  Digit n -> Nat
-fromIntegral = fst . fromIntegralHelper
+data VDiv where 
+  VDivp :: Nat -> VDiv
+  VDivq :: Nat -> VDiv
+  VDivm :: Nat -> VDiv
+  VApp  :: VDiv -> VDiv -> VDiv
+  VDiv  :: Nat -> VDiv
 
-data VDiv where
-  VDiv :: Nat -> Nat -> Nat -> VDiv
+(VDivp p) `VApp` (VDivq q) `VApp` (VDivm m) `VApp` (VDiv d)
+  | pExhausted p && qExhausted q = VDivm zero
+  | pExhausted p = (VDivm m)
+  | qExhausted q = (VDivp p)          `VApp` (VDivq d)          `VApp` (VDivm (succ m)) `VApp` (VDiv d)
+  | otherwise    = (VDivp (shrink p)) `VApp` (VDivq (shrink q)) `VApp` (VDivm m)        `VApp` (VDiv d)
+  | balanced     = undefined
+  where
+    pExhausted = \case
+                   (NZ _) -> True
+                   _      -> False
+
+    qExhausted = \case
+                   (NZ _) -> True
+                   _     -> False
+    balanced = False
