@@ -78,11 +78,15 @@ data VDiv where
                    _     -> False
     balanced = False
 
-newtype Mod       = Mod { runMod :: Nat -> Nat -> Equation Nat Nat Nat Nat  }
+newtype Mod       = Mod { runMod :: Nat -> Nat -> Equation }
 newtype Equals    = Equals { runEquals :: Nat -> Nat -> Mod ->  (Nat `Mod` Nat) `Equals` (Nat,Nat) }
-data Equation p q where
-  Equation :: forall p q m d. (Digit p, Digit q) => () -> (VDivp p) `VApp` (VDivq q) `VApp` (VDivm p) `VApp` (VDiv q)
+data PSST where
+ Run :: forall f . (Functor ~ f) => Nat -> Nat -> f ((VDivp Nat) `VApp` (VDivq Nat) `VApp` (VDivm Nat) `VApp` (VDiv Nat)) -> PSST
 
-(r `Mod` q) `Equals` (q,r) :: (VDivp r) `VApp` (VDivq q) `VApp` (VDivm Nat) `VApp` (VDiv q)
+{-
+  PSST :: (r `Mod` q) `Equals` (q,r) :: (VDivp r) `VApp` (VDivq q) `VApp` (VDivm Nat) `VApp` (VDiv q)
+  Equation :: forall p q m d. (Digit p, Digit q, Nat ~ p, q ~ Nat) => 
+-}
+
 
 someFunc = return ()
