@@ -3,6 +3,8 @@ module Lib where
 import Prelude (Num(..)) 
 import Prelude hiding (succ, fromIntegral)
 import qualified Prelude
+import Data.Function ((&))
+import Debug.Trace
 type Digit n = (Eq n, Show n, Num n) => n
 
 data Nat where
@@ -95,7 +97,21 @@ solver p' q' =  (modulo, mempty)
   where
    p =  (VDivp p')
    q =  (VDivq q')
-   (VDivm modulo) = p `VApp` q `VApp` (VDivm mempty) `VApp` q
+   (VDivm modulo) = x `seq` p `VApp` q `VApp` (VDivm mempty) `VApp` q
+   x = trace "entering ..." ()
+
+key :: Mod -> (Nat, Nat)
+key (RunMod p q ouroboros) = ouroboros p q
+
+{-
+*Main Lib Paths_durp Data.Function> :t (&)
+(&) :: a -> (a -> b) -> b
+*Main Lib Paths_durp Data.Function> :t (10 // 5) solver & key
+(10 // 5) solver & key :: (Nat, Nat)
+*Main Lib Paths_durp Data.Function> (10 // 5) solver & key
+(*** Exception: /Users/dante.elrik/clones/clang/durp/src/Lib.hs:98:4-61: Non-exhaustive patterns in VDivm modulo
+*Main Lib Paths_durp Data.Function>
+-}
 
 someFunc :: IO ()
 someFunc = return ()
