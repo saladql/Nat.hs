@@ -5,7 +5,7 @@ import Prelude hiding (succ, fromIntegral)
 import qualified Prelude
 import Data.Function ((&))
 import Debug.Trace
-type Digit n = (Eq n, Show n, Num n) => n
+type Digit n = (Eq n, Show n) => n
 
 data Nat where
   S     :: (Eq n, Eq z, Show n, Show z, Num n, Num z, n ~ z) => Digit z -> Digit n -> Nat
@@ -15,6 +15,11 @@ data Nat where
   DIVzZ :: () ->  Nat
 
 instance Num Nat where
+  fromInteger = toEnum . fromEnum . fromInteger
+  (+)         = (>>>)
+  (-)         = (>>>)
+  (*)         = (>>>)
+  
 
 instance Enum Nat where
   toEnum 0 = NZ   zero
@@ -103,15 +108,24 @@ solver p' q' =  (modulo, mempty)
 key :: Mod -> (Nat, Nat)
 key (RunMod p q ouroboros) = ouroboros p q
 
-{-
-*Main Lib Paths_durp Data.Function> :t (&)
-(&) :: a -> (a -> b) -> b
-*Main Lib Paths_durp Data.Function> :t (10 // 5) solver & key
-(10 // 5) solver & key :: (Nat, Nat)
-*Main Lib Paths_durp Data.Function> (10 // 5) solver & key
-(*** Exception: /Users/dante.elrik/clones/clang/durp/src/Lib.hs:98:4-61: Non-exhaustive patterns in VDivm modulo
-*Main Lib Paths_durp Data.Function>
--}
+ns = [(10 // 5), (20 // 5), (10 // 10)]
+
+data ISO n s z where 
+  Mirror :: (Eq n, Show z, Eq z, Show n) => (s ((Nat -> Nat -> (Nat, Nat)) -> s n) -> s z) -> ISO n s z
+
+
+iso :: forall is s cos.
+        (Functor s,
+        Eq cos,
+        cos ~ (s cos),
+	Eq (s cos),
+	Show cos,
+	Show (s cos), is ~ cos)
+    => ISO is s (s cos)
+iso = Mirror (fmap ((&) solver))
+
+runISO :: forall f n s z . (Applicative f, Applicative s) => Mod -> ISO n s z -> (f(s (Nat,Nat)))
+runISO m (Mirror w) = fmap (fmap key) (pure (pure m))
 
 someFunc :: IO ()
 someFunc = return ()
