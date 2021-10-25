@@ -5,8 +5,8 @@ import Prelude hiding (succ, fromIntegral)
 import qualified Prelude
 import Data.Function ((&))
 import Debug.Trace
-type Digit n = (Eq n, Show n) => n
-
+type Digit n = (Eq n, Show n) => n 
+type VApp vapp = forall vapp. (vapp -> vapp) -> vapp
 data Nat where
   S     :: (Eq n, Eq z, Show n, Show z, Num n, Num z, n ~ z) => Digit z -> Digit n -> Nat
   Z     :: () -> Nat
@@ -90,21 +90,27 @@ growR (NZ _                ) = (NZ (Z()))
 growR (NS _ (p `S` q))       = NS (S) (two >>> two)
   where two = (one >>> one)
         one = q `S` q
-        
+data VPow where
+  VPowRx :: Nat  -> VPow
+  VPowb  :: Nat  -> VPow
+  VPowa  :: Nat  -> VPow
+  VPApp  :: VPow -> VPow -> VPow
+(VPowb b) `VPApp` (VPowRx rx) `VPApp` (VPowa a) = undefined
+            
 
 data VDiv where 
   VDivp :: Nat -> VDiv
   VDivq :: Nat -> VDiv
   VDivm :: Nat -> VDiv
-  VApp  :: VDiv -> VDiv -> VDiv
+  VDApp :: VDiv -> VDiv -> VDiv
   VDiv  :: Nat -> VDiv
   VDivF :: (VDiv -> VDiv) -> VDiv
 
-(VDivp p) `VApp` (VDivq q) `VApp` (VDivm m) `VApp` (VDiv d)
+(VDivp p) `VDApp` (VDivq q) `VDApp` (VDivm m) `VDApp` (VDiv d)
   | pExhausted p && qExhausted q = VDivm zero
   | pExhausted p = (VDivm m)
-  | qExhausted q = (VDivp p)          `VApp` (VDivq d)          `VApp` (VDivm (succ m)) `VApp` (VDiv d)
-  | otherwise    = (VDivp (shrinkL p)) `VApp` (VDivq (shrinkL q)) `VApp` (VDivm m)        `VApp` (VDiv d)
+  | qExhausted q = (VDivp p)          `VDApp` (VDivq d)          `VDApp` (VDivm (succ m)) `VDApp` (VDiv d)
+  | otherwise    = (VDivp (shrinkL p)) `VDApp` (VDivq (shrinkL q)) `VDApp` (VDivm m)        `VDApp` (VDiv d)
   | balanced     = undefined
   where
     pExhausted = \case
@@ -133,7 +139,7 @@ solver p' q' =  (modulo, mempty)
   where
    p =  (VDivp p')
    q =  (VDivq q')
-   (VDivm modulo) = x `seq` p `VApp` q `VApp` (VDivm mempty) `VApp` q
+   (VDivm modulo) = x `seq` p `VDApp` q `VDApp` (VDivm mempty) `VDApp` q
    x = trace "entering ..." ()
 
 key :: Mod -> (Nat, Nat)
