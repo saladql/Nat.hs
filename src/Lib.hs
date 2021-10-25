@@ -25,11 +25,7 @@ instance Num Nat where
 
 instance Enum Nat where
   toEnum 0            = NZ   zero
-  toEnum 1            = NS S (zero >>> one)
-  toEnum 2            = NS S (one  >>> one)
-  toEnum 3            = toEnum 2        >>> toEnum 1
-  toEnum n            = toEnum (pred n) >>> toEnum 1
-    
+  toEnum n            = succ (toEnum (pred n))
     
   fromEnum (NZ _)          = 0
   fromEnum (NS _ (n `S` z))= p +  q
