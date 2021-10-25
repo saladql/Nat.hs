@@ -25,6 +25,9 @@ instance Enum Nat where
   toEnum 0 = NZ   zero
   toEnum 1 = NS S one
   toEnum k = NS S (succ (toEnum (k + negate 1) :: Nat))
+  fromEnum (NZ zero)  = 0
+  fromEnum (NS _ one) = 1
+  fromEnum k          = 1 + fromEnum (shrink k) -- foldr crunch \a b b -> ta -> b (\(fromEnum (shrink k)
 
 instance Eq Nat where
   (Z _   ) == (Z _)    = True
@@ -46,15 +49,19 @@ instance Show Nat where
   showsPrec d (NS _ m) = showsPrec d '(' . showsPrec (d-1) m . showsPrec d ')'
   showsPrec d (DIVzZ _)= showsPrec d "<<divding by zero already, son?>>"
 
-zero, one :: Nat
-one  = S 0 1
-zero = Z ()
+negate_one, zero, one :: Nat
+
+-- typical integers
+one         = S 0 1
+zero        = Z ()
 negate_one  = S 0 (negate 1)
 
 succ :: Nat -> Nat
 succ btm@(DIVzZ _)   = btm
 succ z@(NZ _)        = NS (S) z
 succ i@(NS _ o)      = NS (S) (one `S` o)
+grow = succ
+
 
 shrink :: Nat -> Nat
 shrink (Z ()  )         = Z ()
