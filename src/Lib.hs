@@ -25,6 +25,7 @@ instance Num Nat where
 
 instance Enum Nat where
   toEnum 0            = NZ   zero
+  toEnum 1            = NS (S) one
   toEnum n            = succ (toEnum (pred n))
     
   fromEnum (NZ _)          = 0
