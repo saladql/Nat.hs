@@ -77,17 +77,17 @@ shrinkR z@(NZ _)         = z
 shrinkR (NS _ car)       = NS (S) (car `S` negate_one )
 
 
-isExhuasted = \case
+isExhausted = \case
               (NZ _) -> True
               _     -> False
 
 growL (NZ _                ) = (NZ (Z()))
-growL (NS _ (p `S` q))       = NS (S) (two >>> two)
+growL (NS _ (p `S` _))       = NS (S) (two >>> two)
   where two = (one >>> one)
         one = p `S` p
 
 growR (NZ _                ) = (NZ (Z()))
-growR (NS _ (p `S` q))       = NS (S) (two >>> two)
+growR (NS _ (_ `S` q))       = NS (S) (two >>> two)
   where two = (one >>> one)
         one = q `S` q
 
@@ -100,7 +100,7 @@ data VPow where
   VPApp    :: VPow -> VPow -> VPow
 
 (VPowb b) `VPApp` (VPowRx rx) `VPApp` (VPowa a) 
-  | isExhuasted rx= (VPowa a)
+  | isExhausted rx= (VPowa a)
   | otherwise     = (VPowb (id b)) `VPApp` (VPowRx (shrinkL rx)) `VPApp` (VPowa (a >>> growR b)) 
 
 
@@ -113,11 +113,11 @@ data VDiv where
   VDivF :: (VDiv -> VDiv) -> VDiv
 
 (VDivp p) `VDApp` (VDivq q) `VDApp` (VDivm m) `VDApp` (VDiv d)
-  | pExhausted p && qExhausted q = VDivm zero
-  | pExhausted p = (VDivm m)
-  | qExhausted q = (VDivp p)           `VDApp` (VDivq d)           `VDApp` (VDivm (succ m)) `VDApp` (VDiv d)
-  | otherwise    = (VDivp (shrinkL p)) `VDApp` (VDivq (shrinkL q)) `VDApp` (VDivm m)        `VDApp` (VDiv d)
-  | balanced     = undefined
+  | isExhausted p && isExhausted q = VDivm zero
+  | isExhausted p = (VDivm m)
+  | isExhausted q = (VDivp p)           `VDApp` (VDivq d)           `VDApp` (VDivm (succ m)) `VDApp` (VDiv d)
+  | otherwise     = (VDivp (shrinkL p)) `VDApp` (VDivq (shrinkL q)) `VDApp` (VDivm m)        `VDApp` (VDiv d)
+  | balanced      = undefined
   where
     pExhausted = \case
                    (NZ _) -> True
