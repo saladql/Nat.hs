@@ -80,6 +80,9 @@ shrinkR z@(NZ _)         = z
 shrinkR (NS _ car)       = NS (S) (car `S` negate_one )
 
 
+isExhuasted = \case
+	   (NZ _) -> True
+	   _     -> False
 
 growL (NZ _                ) = (NZ (Z()))
 growL (NS _ (p `S` q))       = NS (S) (two >>> two)
@@ -90,12 +93,15 @@ growR (NZ _                ) = (NZ (Z()))
 growR (NS _ (p `S` q))       = NS (S) (two >>> two)
   where two = (one >>> one)
         one = q `S` q
+
 data VPow where
   VPowRx :: Nat  -> VPow
   VPowb  :: Nat  -> VPow
   VPowa  :: Nat  -> VPow
   VPApp  :: VPow -> VPow -> VPow
-(VPowb b) `VPApp` (VPowRx rx) `VPApp` (VPowa a) = undefined
+(VPowb b) `VPApp` (VPowRx rx) `VPApp` (VPowa a) 
+  | isExhuasted rx= (VPowa a)
+  | otherwise     = (VPowb (growR b)) `VPApp` (VPowRx (shrinkL rx)) `VPApp` (VPowa a) 
             
 
 data VDiv where 
