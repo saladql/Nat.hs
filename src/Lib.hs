@@ -25,9 +25,12 @@ instance Num Nat where
 
 instance Enum Nat where
   toEnum 0            = NZ   zero
-  toEnum 1            = NS S one
-  toEnum k            = NS S (succ (toEnum (k + negate 1) :: Nat))
-
+  toEnum 1            = NS S (zero >>> one)
+  toEnum 2            = NS S (one  >>> one)
+  toEnum 3            = toEnum 2        >>> toEnum 1
+  toEnum n            = toEnum (pred n) >>> toEnum (pred n)
+    
+    
   fromEnum (NZ _)          = 0
   fromEnum (NS _ (n `S` z))= p +  q
     where
@@ -44,7 +47,7 @@ instance Eq Nat where
 (>>>) :: Nat -> Nat -> Nat
 (>>>) z n = S z n
 
-instance Semigroup Nat where (<>) = (>>>)
+instance Semigroup Nat where   (<>) = (>>>)
 instance Monoid Nat    where mempty = NS (>>>) (zero  >>> zero)
 
 -- showsPrec d x r ++ s  ==  showsPrec d x (r ++ s)
@@ -62,17 +65,32 @@ one         = S 0 1
 zero        = Z ()
 negate_one  = S 0 (negate 1)
 
-succ :: Nat -> Nat
+growL ,growR ,succ ,shrinkL ,shrinkR :: Nat -> Nat
+
 succ btm@(DIVzZ _)   = btm
 succ z@(NZ _)        = NS (S) z
 succ i@(NS _ o)      = NS (S) (one `S` o)
-grow = succ
+
+shrinkL (Z ()  )         = Z ()
+shrinkL z@(NZ _)         = z
+shrinkL (NS _ car)       = NS (S) (negate_one `S` car)
+
+shrinkR (Z ()  )         = Z ()
+shrinkR z@(NZ _)         = z
+shrinkR (NS _ car)       = NS (S) (car `S` negate_one )
 
 
-shrink :: Nat -> Nat
-shrink (Z ()  )         = Z ()
-shrink z@(NZ _)         = z
-shrink (NS _ car)       = NS (S) (negate_one `S` car)
+
+growL (NZ _                ) = (NZ (Z()))
+growL (NS _ (p `S` q))       = NS (S) (two >>> two)
+  where two = (one >>> one)
+        one = p `S` p
+
+growR (NZ _                ) = (NZ (Z()))
+growR (NS _ (p `S` q))       = NS (S) (two >>> two)
+  where two = (one >>> one)
+        one = q `S` q
+        
 
 data VDiv where 
   VDivp :: Nat -> VDiv
@@ -86,7 +104,7 @@ data VDiv where
   | pExhausted p && qExhausted q = VDivm zero
   | pExhausted p = (VDivm m)
   | qExhausted q = (VDivp p)          `VApp` (VDivq d)          `VApp` (VDivm (succ m)) `VApp` (VDiv d)
-  | otherwise    = (VDivp (shrink p)) `VApp` (VDivq (shrink q)) `VApp` (VDivm m)        `VApp` (VDiv d)
+  | otherwise    = (VDivp (shrinkL p)) `VApp` (VDivq (shrinkL q)) `VApp` (VDivm m)        `VApp` (VDiv d)
   | balanced     = undefined
   where
     pExhausted = \case
