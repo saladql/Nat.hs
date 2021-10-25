@@ -19,6 +19,8 @@ instance Num Nat where
   (+)         = (>>>)
   (-)         = (>>>)
   (*)         = (>>>)
+  abs         = undefined
+  signum      = undefined
   
 
 instance Enum Nat where
@@ -29,8 +31,8 @@ instance Enum Nat where
   fromEnum (NZ _)          = 0
   fromEnum (NS _ (n `S` z))= p +  q
     where
-      p = _
-      q = _
+      p = undefined
+      q = undefined
 
 
 instance Eq Nat where
@@ -129,9 +131,9 @@ iso :: forall is s cos.
         (Functor s,
         Eq cos,
         cos ~ (s cos),
-	Eq (s cos),
-	Show cos,
-	Show (s cos), is ~ cos)
+        Eq (s cos),
+        Show cos,
+        Show (s cos), is ~ cos)
     => ISO is s (s cos)
 iso = Mirror (fmap ((&) solver))
 
