@@ -26,8 +26,11 @@ instance Enum Nat where
   toEnum 1            = NS S one
   toEnum k            = NS S (succ (toEnum (k + negate 1) :: Nat))
 
-  fromEnum (NZ _)     = 0
-  fromEnum k          = shrink k `seq` (fromEnum k + 1)
+  fromEnum (NZ _)          = 0
+  fromEnum (NS _ (n `S` z))= p +  q
+    where
+      p = _
+      q = _
 
 
 instance Eq Nat where
