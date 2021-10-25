@@ -101,7 +101,7 @@ data VPow where
   VPApp  :: VPow -> VPow -> VPow
 (VPowb b) `VPApp` (VPowRx rx) `VPApp` (VPowa a) 
   | isExhuasted rx= (VPowa a)
-  | otherwise     = (VPowb (growR b)) `VPApp` (VPowRx (shrinkL rx)) `VPApp` (VPowa (a >>> growR b)) 
+  | otherwise     = (VPowb (id b)) `VPApp` (VPowRx (shrinkL rx)) `VPApp` (VPowa (a >>> growR b)) 
             
 
 data VDiv where 
