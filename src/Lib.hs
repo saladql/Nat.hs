@@ -96,11 +96,13 @@ data VPow where
   VPowb    :: Nat  -> VPow
   VPowa    :: Nat  -> VPow
   VPowSucc :: Nat  -> (Nat  -> VPow)
+  VPow     :: Nat  -> VPow
   VPApp    :: VPow -> VPow -> VPow
+
 (VPowb b) `VPApp` (VPowRx rx) `VPApp` (VPowa a) 
   | isExhuasted rx= (VPowa a)
   | otherwise     = (VPowb (id b)) `VPApp` (VPowRx (shrinkL rx)) `VPApp` (VPowa (a >>> growR b)) 
-            
+
 
 data VDiv where 
   VDivp :: Nat -> VDiv
