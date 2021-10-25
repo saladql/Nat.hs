@@ -22,12 +22,13 @@ instance Num Nat where
   
 
 instance Enum Nat where
-  toEnum 0 = NZ   zero
-  toEnum 1 = NS S one
-  toEnum k = NS S (succ (toEnum (k + negate 1) :: Nat))
-  fromEnum (NZ zero)  = 0
-  fromEnum (NS _ one) = 1
-  fromEnum k          = 1 + fromEnum (shrink k) -- foldr crunch \a b b -> ta -> b (\(fromEnum (shrink k)
+  toEnum 0            = NZ   zero
+  toEnum 1            = NS S one
+  toEnum k            = NS S (succ (toEnum (k + negate 1) :: Nat))
+
+  fromEnum (NZ _)     = 0
+  fromEnum k          = shrink k `seq` (fromEnum k + 1)
+
 
 instance Eq Nat where
   (Z _   ) == (Z _)    = True
