@@ -8,6 +8,8 @@ import Debug.Trace
 type Digit n = (Eq n, Show n) => n 
 type VApp vapp = forall vapp. (vapp -> vapp) -> vapp
 data Nat where
+  ShrinkL :: (Nat,Nat) -> (Nat,Nat)
+  ShrinkR :: (Nat,Nat) -> (Nat,Nat)
   S     :: (Eq n, Eq z, Show n, Show z, Num n, Num z, n ~ z) => Digit z -> Digit n -> Nat
   Z     :: () -> Nat
   NZ    :: Nat -> Nat
