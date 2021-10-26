@@ -8,15 +8,17 @@ import Debug.Trace
 type Digit n = (Eq n, Show n) => n 
 type VApp vapp = forall vapp. (vapp -> vapp) -> vapp
 data Nat where
-  ShrinkL :: Nat -> Nat
-  ShrinkR :: Nat -> Nat
+  ShrinkL :: Nat -> (Nat,Nat)
+  ShrinkR :: Nat -> (Nat,Nat)
+  GrowL   :: Nat -> (Nat,Nat)
+  GrowR   :: Nat -> (Nat,Nat)
   FoldL   :: ((Nat, Nat) -> (Nat, Nat)) -> Nat -> Nat
   FoldR   :: ((Nat, Nat) -> (Nat, Nat)) -> Nat -> Nat
-  S     :: (Eq n, Eq z, Show n, Show z, Num n, Num z, n ~ z) => Digit z -> Digit n -> Nat
-  Z     :: () -> Nat
-  NZ    :: Nat -> Nat
-  NS    :: (Digit n -> Digit n -> Nat) -> Nat -> Nat
-  DIVzZ :: () ->  Nat
+  S       :: (Eq n, Eq z, Show n, Show z, Num n, Num z, n ~ z) => Digit z -> Digit n -> Nat
+  Z       :: () -> Nat
+  NZ      :: Nat -> Nat
+  NS      :: (Digit n -> Digit n -> Nat) -> Nat -> Nat
+  DIVzZ   :: () ->  Nat
 
 instance Num Nat where
   fromInteger = toEnum . fromEnum . fromInteger
