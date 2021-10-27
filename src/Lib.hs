@@ -15,9 +15,8 @@ data DNA where
   HHINOI    :: DNA -> ()   -> DNA
   HOINHI    :: ()  -> DNA  -> DNA
   NHINOI    :: ()  -> ()   -> DNA
-  HHIHOI    :: DNA -> DNA  -> DNA
-  POSH      :: ()  -> DNA
-  NEGH      :: ()  -> DNA
+  HHIHOI    :: (DNA , DNA) -> DNA
+  SPLIT     :: DNA -> (DNA , DNA) -> DNA
   
 
 instance Show DNA where
