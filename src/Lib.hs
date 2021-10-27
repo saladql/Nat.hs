@@ -8,10 +8,12 @@ import Debug.Trace
 type Digit n = (Eq n, Show n) => n 
 type VApp vapp = forall vapp. (vapp -> vapp) -> vapp
 data DNA where
-  A :: DNA
-  G :: DNA
-  C :: DNA
-  T :: DNA
+
+  EitherIDNA :: (DNA,DNA) -> DNA
+  HI :: DNA -> DNA
+  OI :: DNA -> DNA
+  NI :: ()  -> DNA
+  
   EitherDNA :: DNA -> DNA -> DNA
   EitherDNAII :: Either DNA ()
   EitherDNAIII :: Either () DNA
