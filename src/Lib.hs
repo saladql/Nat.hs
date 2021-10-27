@@ -24,9 +24,9 @@ instance Show DNA where
   showsPrec d (NHINOI _ _) = showsPrec d "XX"
 
 instance Enum DNA where
-  toEnum 0 = NHINOI () ()
-  toEnum 1 = HHINOI (toEnum 0) ()
-  toEnum 2 = HOINHI ()         (toEnum 0)
+  toEnum 0 = NHINOI    ()         ()
+  toEnum 1 = HHINOI    (toEnum 0) ()
+  toEnum 2 = HOINHI    ()         (toEnum 0)
   toEnum 3 = EItherDNA (toEnum 0) (toEnum 0)
  
 data Nat where
