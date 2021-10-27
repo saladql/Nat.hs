@@ -8,7 +8,7 @@ import Debug.Trace
 type Digit n = (Eq n, Show n) => n 
 type VApp vapp = forall vapp. (vapp -> vapp) -> vapp
 data DNA where
-  EItherDNA :: ()  -> DNA -> DNA  -> DNA
+  VAPPDNA   :: ()  -> DNA -> DNA  -> DNA
   HI        :: ()  -> DNA -> ()   -> DNA
   OI        :: ()  -> ()  -> DNA  -> DNA
   NI        :: ()  -> ()  -> ()   -> DNA
@@ -20,7 +20,7 @@ data DNA where
   
 
 instance Show DNA where
-  showsPrec d (EItherDNA _ h i)      = showsPrec d '(' . showsPrec (d-1) h . showsPrec d ')' .  showsPrec d '(' . showsPrec (d-1) i . showsPrec d ')'
+  showsPrec d (VAPPDNA _ h i)        = showsPrec d '(' . showsPrec (d-1) h . showsPrec d ')' .  showsPrec d '(' . showsPrec (d-1) i . showsPrec d ')'
   showsPrec d (HI _ i _)             = showsPrec d ".I."
   showsPrec d (OI _ _ o)             = showsPrec d "..O"
   showsPrec d (NI _ _ _)             = showsPrec d "..."
@@ -34,7 +34,7 @@ instance Enum DNA where
   toEnum 0 = NHINOI    () ()         ()
   toEnum 1 = HHINOI    () (toEnum 0) ()
   toEnum 2 = HOINHI    () ()         (toEnum 0)
-  toEnum 3 = EItherDNA () (toEnum 0) (toEnum 0)
+  toEnum 3 = VAPPDNA   () (toEnum 0) (toEnum 0)
  
 data Nat where
   FromDNA :: DNA -> Nat
