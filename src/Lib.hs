@@ -32,7 +32,7 @@ instance Enum DNA where
   toEnum 4 = C
  
 data Nat where
-  FromDNA :: Int -> DNA -> Nat
+  FromDNA :: DNA -> Nat
   Flip    :: Nat -> Nat -> Nat
   ShrinkL :: Nat -> (Nat,Nat)
   ShrinkR :: Nat -> (Nat,Nat)
