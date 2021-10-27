@@ -17,6 +17,7 @@ data DNA where
   NHINOI    :: ()  -> ()  -> ()   -> DNA
   HHIHOI    :: ()  -> (DNA , DNA) -> DNA
   SPLIT     :: DNA -> (DNA , DNA) -> DNA
+  STITCH    :: (DNA , DNA) -> DNA -> DNA
   
 
 instance Show DNA where
@@ -25,6 +26,7 @@ instance Show DNA where
   showsPrec d (OI _ _ o)             = showsPrec d "..O"
   showsPrec d (NI _ _ _)             = showsPrec d "..."
   showsPrec d (xx `SPLIT` (xi,xo))   = showsPrec d '(' . showsPrec (d-1) xx   . showsPrec (d-1) ')'   .  showsPrec (d-1) '(' . showsPrec (d-1) 'V' . showsPrec (d-1) xi . showsPrec (d-1) 'V' . showsPrec (d-1) xo . showsPrec d ')'
+  showsPrec d ((xi,xo) `STITCH` xx)  = showsPrec d '(' . showsPrec (d-1) xx   . showsPrec (d-1) ')'   .  showsPrec (d-1) '(' . showsPrec (d-1) '%' . showsPrec (d-1) xi . showsPrec (d-1) '%' . showsPrec (d-1) xo . showsPrec d ')'
   showsPrec d (HHINOI _ x _ )        = showsPrec d '(' . showsPrec (d-1)  x   . showsPrec (d-1) '?'   . showsPrec d     ')'
   showsPrec d (HOINHI _ _ y )        = showsPrec d '(' . showsPrec (d-1) '?'  . showsPrec (d-1)  y    . showsPrec d     ')'
   showsPrec d (HHIHOI _ (x,y))       = showsPrec d '(' . showsPrec (d-1)  x   . showsPrec (d-1)  y    . showsPrec d     ')'
@@ -35,6 +37,7 @@ instance Enum DNA where
   toEnum 1 = HHINOI    () (toEnum 0) ()
   toEnum 2 = HOINHI    () ()         (toEnum 0)
   toEnum 3 = VAPPDNA   () (toEnum 0) (toEnum 0)
+  toEnum 4 = SPLIT     (toEnum 0) ((toEnum 0),(toEnum 0))
  
 data Nat where
   FromDNA :: DNA -> Nat
