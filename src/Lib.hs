@@ -24,14 +24,11 @@ instance Show DNA where
   showsPrec d (HI _ i _) = showsPrec d ".I."
   showsPrec d (OI _ _ o) = showsPrec d "..O"
   showsPrec d (NI _ _ _) = showsPrec d "..."
-  showsPrec d (NHINOI _ _ _) = showsPrec d "XXX"
-
-  showsPrec d (HHINOI _ x _ ) = showsPrec d '(' . showsPrec (d-1) x   . showsPrec d '?'   . showsPrec d ')'
-  showsPrec d (HOINHI _ _ y ) = showsPrec d '(' . showsPrec (d-1) '?' . showsPrec (d-1) y . showsPrec d ')'
-
-  showsPrec d (NHINOI _ _ _ )= showsPrec d '(' . showsPrec (d-1) '?' . showsPrec (d-1) '?' . showsPrec d ')'
-  showsPrec d (HHIHOI _ (x,y))= showsPrec d '(' . showsPrec (d-1) x . showsPrec (d-1) y . showsPrec d ')'
-  showsPrec d (xx `SPLIT` (xi,xo))=showsPrec d '(' . showsPrec (d-1) xx . showsPrec (d-1) xi . showsPrec (d-1) xo . showsPrec d ')'
+  showsPrec d (xx `SPLIT` (xi,xo))=showsPrec d '(' . showsPrec (d-1) xx . showsPrec (d-1) ')' . showsPrec (d-1) 'V' . showsPrec (d-1) xi . showsPrec (d-1) 'V' . showsPrec (d-1) xo . showsPrec d ')'
+  showsPrec d (HHINOI _ x _ ) = showsPrec d '(' . showsPrec (d-1)  x   . showsPrec d     '?'   . showsPrec d ')'
+  showsPrec d (HOINHI _ _ y ) = showsPrec d '(' . showsPrec (d-1) '?'  . showsPrec (d-1)  y    . showsPrec d ')'
+  showsPrec d (HHIHOI _ (x,y))= showsPrec d '(' . showsPrec (d-1)  x   . showsPrec (d-1)  y    . showsPrec d ')'
+  showsPrec d (NHINOI _ _ _ ) = showsPrec d '(' . showsPrec (d-1) '?'  . showsPrec (d-1) '?'   . showsPrec d ')'
 
 
 
