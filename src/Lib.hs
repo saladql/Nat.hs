@@ -28,7 +28,6 @@ instance Enum DNA where
   toEnum 1 = HHINOI (toEnum 0) ()
   toEnum 2 = HOINHI ()         (toEnum 0)
   toEnum 3 = EItherDNA (toEnum 0) (toEnum 0)
-  toEnum 4 = toEnum 0
  
 data Nat where
   FromDNA :: DNA -> Nat
