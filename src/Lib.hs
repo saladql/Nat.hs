@@ -8,28 +8,27 @@ import Debug.Trace
 type Digit n = (Eq n, Show n) => n 
 type VApp vapp = forall vapp. (vapp -> vapp) -> vapp
 data DNA where
-
-  EItherDNA :: (DNA,DNA) -> DNA
-  HI     :: DNA -> DNA
-  OI     :: DNA -> DNA
-  NI     :: ()  -> DNA
-  HHINOI :: DNA -> ()   -> DNA
-  HOINHI :: ()  -> DNA  -> DNA
-  NoDNA :: DNA
+  EItherDNA :: DNA -> DNA  -> DNA
+  HI        :: DNA -> ()   -> DNA
+  OI        :: ()  -> DNA  -> DNA
+  NI        :: ()  -> ()   -> DNA
+  HHINOI    :: DNA -> ()   -> DNA
+  HOINHI    :: ()  -> DNA  -> DNA
+  NHINOI    :: ()  -> ()   -> DNA
 
 instance Show DNA where
-  showsPrec d (EItherDNA (h, i))  = showsPrec d '(' . showsPrec d h . showsPrec d i . showsPrec d ')'
-  showsPrec d (HI i) = showsPrec d "HI"
-  showsPrec d (OI o) = showsPrec d "OI"
-  showsPrec d (NI _) = showsPrec d "NI"
-  showsPrec d (NoDNA) = showsPrec d "X"
+  showsPrec d (EItherDNA h i)  = showsPrec d '(' . showsPrec d h . showsPrec d i . showsPrec d ')'
+  showsPrec d (HI _ i) = showsPrec d "I."
+  showsPrec d (OI _ o) = showsPrec d "O."
+  showsPrec d (NI _ _) = showsPrec d ".."
+  showsPrec d (NHINOI _ _) = showsPrec d "XX"
 
 instance Enum DNA where
-  toEnum 0 = NoDNA
-  toEnum 1 = HHINOI NoDNA ()
-  toEnum 2 = HOINHI ()    NoDNA
-  toEnum 3 = EItherDNA (NoDNA,NoDNA)
-  toEnum 4 = NoDNA
+  toEnum 0 = NHINOI () ()
+  toEnum 1 = HHINOI (toEnum 0) ()
+  toEnum 2 = HOINHI ()         (toEnum 0)
+  toEnum 3 = EItherDNA (toEnum 0) (toEnum 0)
+  toEnum 4 = toEnum 0
  
 data Nat where
   FromDNA :: DNA -> Nat
