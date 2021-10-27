@@ -19,7 +19,7 @@ data DNA where
 instance Show DNA where
   showsPrec d (EItherDNA h i)  = showsPrec d '(' . showsPrec d h . showsPrec d i . showsPrec d ')'
   showsPrec d (HI _ i) = showsPrec d "I."
-  showsPrec d (OI _ o) = showsPrec d "O."
+  showsPrec d (OI _ o) = showsPrec d ".O"
   showsPrec d (NI _ _) = showsPrec d ".."
   showsPrec d (NHINOI _ _) = showsPrec d "XX"
 
