@@ -7,6 +7,16 @@ import Data.Function ((&))
 import Debug.Trace
 type Digit n = (Eq n, Show n) => n 
 type VApp vapp = forall vapp. (vapp -> vapp) -> vapp
+data DNA where
+  A :: DNA
+  G :: DNA
+  C :: DNA
+  T :: DNA
+  EitherDNA :: DNA -> DNA -> DNA
+  EitherDNAII :: Either DNA ()
+  EitherDNAIII :: EIther () DNA
+  AndDNA :: DNA -> DNA -> (DNA,DNA)
+  NoDNA :: DNA
 data Nat where
   Flip    :: Nat -> Nat -> Nat
   ShrinkL :: Nat -> (Nat,Nat)
