@@ -16,6 +16,9 @@ data DNA where
   HOINHI    :: ()  -> DNA  -> DNA
   NHINOI    :: ()  -> ()   -> DNA
   HHIHOI    :: DNA -> DNA  -> DNA
+  POSH      :: ()  -> DNA
+  NEGH      :: ()  -> DNA
+  
 
 instance Show DNA where
   showsPrec d (EItherDNA h i)  = showsPrec d '(' . showsPrec d h . showsPrec d i . showsPrec d ')'
