@@ -6,8 +6,18 @@ import qualified Prelude
 import Data.Function ((&))
 import Debug.Trace
 type Digit n = (Eq n, Show n) => n 
-type VApp vapp = forall vapp. (vapp -> vapp) -> vapp
 data DNA where
+  -- 2^3
+  {-
+  0/1/1 1/2^2 
+  0/1/0 1/2^1
+  0/0/1 1/1^2
+  0/0/0 1/1^1
+  0/1/0 1/2^1
+  0/0/1 1/1^2
+  0/0/0 1/1^1
+  
+  -}
   VAPPDNA   :: ()  -> DNA -> DNA  -> DNA
   HI        :: ()  -> DNA -> ()   -> DNA
   OI        :: ()  -> ()  -> DNA  -> DNA
@@ -16,6 +26,9 @@ data DNA where
   HOINHI    :: ()  -> ()  -> DNA  -> DNA
   NHINOI    :: ()  -> ()  -> ()   -> DNA
   HHIHOI    :: ()  -> (DNA , DNA) -> DNA
+  
+  
+  -- sugar  
   SPLIT     :: DNA -> (DNA , DNA) -> DNA
   STITCH    :: (DNA , DNA) -> DNA -> DNA
   
