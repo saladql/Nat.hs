@@ -14,10 +14,23 @@ data DNA where
   T :: DNA
   EitherDNA :: DNA -> DNA -> DNA
   EitherDNAII :: Either DNA ()
-  EitherDNAIII :: EIther () DNA
+  EitherDNAIII :: Either () DNA
   AndDNA :: DNA -> DNA -> (DNA,DNA)
   NoDNA :: DNA
+instance Show DNA where
+  showsPrec d A = showsPrec d 'A'
+  showsPrec d G = showsPrec d 'B'
+  showsPrec d C = showsPrec d 'C'
+  showsPrec d T = showsPrec d 'T'
+instance Enum DNA where
+  toEnum 0 = NoDNA
+  toEnum 1 = A
+  toEnum 2 = G
+  toEnum 3 = T
+  toEnum 4 = C
+ 
 data Nat where
+  FromDNA :: Int -> DNA -> Nat
   Flip    :: Nat -> Nat -> Nat
   ShrinkL :: Nat -> (Nat,Nat)
   ShrinkR :: Nat -> (Nat,Nat)
