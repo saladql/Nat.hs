@@ -9,35 +9,35 @@ type Digit n = (Eq n, Show n) => n
 type VApp vapp = forall vapp. (vapp -> vapp) -> vapp
 data DNA where
 
-  EitherIDNA :: (DNA,DNA) -> DNA
-  HI :: DNA -> DNA
-  OI :: DNA -> DNA
-  NI :: ()  -> DNA
-  
-  EitherDNA :: DNA -> DNA -> DNA
-  EitherDNAII :: Either DNA ()
-  EitherDNAIII :: Either () DNA
-  AndDNA :: DNA -> DNA -> (DNA,DNA)
+  EItherDNA :: (DNA,DNA) -> DNA
+  HI     :: DNA -> DNA
+  OI     :: DNA -> DNA
+  NI     :: ()  -> DNA
+  HHINOI :: DNA -> ()   -> DNA
+  HOINHI :: ()  -> DNA  -> DNA
   NoDNA :: DNA
+
 instance Show DNA where
-  showsPrec d A = showsPrec d 'A'
-  showsPrec d G = showsPrec d 'B'
-  showsPrec d C = showsPrec d 'C'
-  showsPrec d T = showsPrec d 'T'
+  showsPrec d (EItherDNA (h, i))  = showsPrec d '(' . showsPrec d h . showsPrec d i . showsPrec d ')'
+  showsPrec d (HI i) = showsPrec d "HI"
+  showsPrec d (OI o) = showsPrec d "OI"
+  showsPrec d (NI _) = showsPrec d "NI"
+  showsPrec d (NoDNA) = showsPrec d "X"
+
 instance Enum DNA where
   toEnum 0 = NoDNA
-  toEnum 1 = A
-  toEnum 2 = G
-  toEnum 3 = T
-  toEnum 4 = C
+  toEnum 1 = HHINOI NoDNA ()
+  toEnum 2 = HOINHI ()    NoDNA
+  toEnum 3 = EItherDNA (NoDNA,NoDNA)
+  toEnum 4 = NoDNA
  
 data Nat where
   FromDNA :: DNA -> Nat
   Flip    :: Nat -> Nat -> Nat
-  ShrinkL :: Nat -> (Nat,Nat)
-  ShrinkR :: Nat -> (Nat,Nat)
-  GrowL   :: Nat -> (Nat,Nat)
-  GrowR   :: Nat -> (Nat,Nat)
+--  ShrinkL :: Nat -> (Nat,Nat)
+--  ShrinkR :: Nat -> (Nat,Nat)
+--  GrowL   :: Nat -> (Nat,Nat)
+--  GrowR   :: Nat -> (Nat,Nat)
   FoldL   :: ((Nat, Nat) -> (Nat, Nat)) -> Nat -> Nat
   FoldR   :: ((Nat, Nat) -> (Nat, Nat)) -> Nat -> Nat
   S       :: (Eq n, Eq z, Show n, Show z, Num n, Num z, n ~ z) => Digit z -> Digit n -> Nat
